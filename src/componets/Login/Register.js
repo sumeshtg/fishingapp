@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import Axios from "axios";
 import { Link } from "react-router-dom";
+import {baseUrl} from "../../constants/global"
 
 function Register() {
   const [data, setData] = useState({
@@ -11,6 +13,41 @@ function Register() {
     type: "",
     conpassword: "",
   });
+
+
+  function submit(e) {
+    e.preventDefault();
+    //setformErrors(validate(data));
+    //setIsSubmit(true);
+    registerfun()
+   // console.log(data);
+    //console.log(formErrors);
+  }
+  
+  function registerfun(){
+    console.log(data);
+   // if((Object.entries(formErrors).length !== 0)&&(formErrors.flag1=="checked")&&(formErrors.flag2=="checked")&&(formErrors.flag3=="checked")&&(formErrors.flag4=="checked")&&(formErrors.flag5=="checked")&&(formErrors.flag6=="checked")){
+      Axios.post(baseUrl+"register", {
+        email: data.email,
+        mobile: data.mobile,
+        password: data.password,
+        username: data.username,
+        name: data.name,
+        user_type: data.type,
+      }).then((res) => {
+        console.log(res);
+         
+        /* if(res.data.status=="Username Already Exist"){
+          setpopup({color:"danger",mesg:"Username Already Exist"})
+         }
+         else{
+          setpopup({color:"success",mesg:"Registered"})
+          navigate("/");
+         }*/
+         
+      });
+   // }
+  }
 
   function handle(e) {
     const newdata = { ...data };
@@ -46,7 +83,7 @@ function Register() {
                         Enter your personal details to create account
                       </p>
                     </div>
-                    <form className="row g-3 needs-validation" noValidate>
+                    <form className="row g-3 needs-validation"  onSubmit={(e) => submit(e)}>
                       <div className="col-12">
                         <label htmlFor="yourName" className="form-label">
                           Your Name
