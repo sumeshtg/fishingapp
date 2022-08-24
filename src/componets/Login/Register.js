@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Axios from "axios";
 import { Link } from "react-router-dom";
-import {baseUrl} from "../../constants/global"
+const {CONSTANTS} = require( '../../constants/Global')
 
 function Register() {
   const [data, setData] = useState({
@@ -14,20 +14,25 @@ function Register() {
     conpassword: "",
   });
 
+  const [message, setMessage] = useState({msg : "", disAlert : "none"});
+
+  const [formErrors, setformErrors] = useState({});
 
   function submit(e) {
     e.preventDefault();
-    //setformErrors(validate(data));
+    setformErrors(validate(data));
     //setIsSubmit(true);
-    registerfun()
+    formErrors? console.log('error') : registerfun();
    // console.log(data);
     //console.log(formErrors);
   }
   
   function registerfun(){
-    console.log(data);
-   // if((Object.entries(formErrors).length !== 0)&&(formErrors.flag1=="checked")&&(formErrors.flag2=="checked")&&(formErrors.flag3=="checked")&&(formErrors.flag4=="checked")&&(formErrors.flag5=="checked")&&(formErrors.flag6=="checked")){
-      Axios.post(baseUrl+"register", {
+    console.log(formErrors);
+
+    if(formErrors.length !== 0) {
+
+      Axios.post(CONSTANTS.baseUrl+"register", {
         email: data.email,
         mobile: data.mobile,
         password: data.password,
@@ -37,17 +42,97 @@ function Register() {
       }).then((res) => {
         console.log(res);
          
-        /* if(res.data.status=="Username Already Exist"){
-          setpopup({color:"danger",mesg:"Username Already Exist"})
+        if(res.data.status=="no"){
+          setMessage({msg: res.data.message, disAlert : "block" });
+          
          }
-         else{
+         /* else{
           setpopup({color:"success",mesg:"Registered"})
           navigate("/");
          }*/
          
       });
-   // }
+    }
   }
+
+
+  const validate = (values) => {
+    const errors = {};
+    var flag = false;
+    //const regex ;
+    if(!data.username){
+      errors.username = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.username = "none";
+    }
+
+    if(!data.password){
+      errors.password = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.password = "none";
+    }
+
+    if(!data.conpassword){
+      errors.conpassword = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.conpassword = "none";
+    }
+   
+    if(!data.name){
+      errors.name = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.name ="none";
+    }
+
+    if(!data.email){
+      errors.email = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.email = "none";
+    }
+
+    if(!data.type){
+      errors.type = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.type = "none";
+    }
+
+    if(!data.mobile){
+      errors.mobile = "block";
+      flag = true;
+    }
+    else
+    {
+      errors.mobile = "none";
+    }
+   
+    if(flag)
+    {
+     return errors;
+    }
+    else
+    {
+      return '';
+    }
+
+  };
 
   function handle(e) {
     const newdata = { ...data };
@@ -83,6 +168,8 @@ function Register() {
                         Enter your personal details to create account
                       </p>
                     </div>
+               
+
                     <form className="row g-3 needs-validation"  onSubmit={(e) => submit(e)}>
                       <div className="col-12">
                         <label htmlFor="yourName" className="form-label">
@@ -95,9 +182,8 @@ function Register() {
                           className="form-control"
                           onChange={(e) => handle(e)}
                           value={data.name}
-                          required
-                        />
-                        <div className="invalid-feedback">
+                            />
+                        <div className="invalid-feedback" style={{display:"block"}} >
                           Please, enter your name!
                         </div>
                       </div>
@@ -112,10 +198,10 @@ function Register() {
                           onChange={(e) => handle(e)}
                           value={data.email}
                           id="email"
-                          required
+                        
                         />
                         <div className="invalid-feedback">
-                          Please enter a valid Email adddress!
+                          Please enter a valid Email!
                         </div>
                       </div>
                       <div className="col-12">
@@ -129,7 +215,7 @@ function Register() {
                           onChange={(e) => handle(e)}
                           value={data.mobile}
                           id="mobile"
-                          required
+                        
                         />
                         <div className="invalid-feedback">
                           Please enter a valid Mobile!
@@ -153,10 +239,10 @@ function Register() {
                             onChange={(e) => handle(e)}
                             value={data.username}
                             id="username"
-                            required
+                          
                           />
                           <div className="invalid-feedback">
-                            Please choose a username.
+                            Please enter an Username!
                           </div>
                         </div>
                       </div>
@@ -171,10 +257,10 @@ function Register() {
                           onChange={(e) => handle(e)}
                           value={data.password}
                           id="password"
-                          required
+                        
                         />
                         <div className="invalid-feedback">
-                          Please enter your password!
+                          Please enter your Password!
                         </div>
                       </div>
                       <div className="col-12">
@@ -188,10 +274,10 @@ function Register() {
                           onChange={(e) => handle(e)}
                           value={data.conpassword}
                           id="conpassword"
-                          required
+                        
                         />
                         <div className="invalid-feedback">
-                          Please retype your password!
+                          Please retype your Password!
                         </div>
                       </div>
                       <div className="col-12">
@@ -205,7 +291,7 @@ function Register() {
                             onChange={(e) => handle(e)}
                             value={data.type}
                             id="type"
-                            required
+                          
                           >
                             <option selected>Select</option>
                             <option value={"user"}>User</option>
@@ -222,7 +308,7 @@ function Register() {
                             type="checkbox"
                             defaultValue
                             id="acceptTerms"
-                            required
+                          
                           />
                           <label
                             className="form-check-label"
@@ -236,6 +322,12 @@ function Register() {
                           </div>
                         </div>
                       </div>
+                           
+                    <div className="alert alert-danger alert-dismissible fade show" role="alert" style={{display:message.disAlert}}  >
+                    <i className="bi bi-exclamation-octagon me-1"></i>
+                     {message.msg}
+                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
                       <div className="col-12">
                         <button className="btn btn-primary w-100" type="submit">
                           Create Account
